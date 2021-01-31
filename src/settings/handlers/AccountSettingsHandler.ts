@@ -28,6 +28,7 @@ const BREADCRUMBS_EVENT_TYPE = "im.vector.setting.breadcrumbs";
 const BREADCRUMBS_EVENT_TYPES = [BREADCRUMBS_LEGACY_EVENT_TYPE, BREADCRUMBS_EVENT_TYPE];
 const RECENT_EMOJI_EVENT_TYPE = "io.element.recent_emoji";
 const INTEG_PROVISIONING_EVENT_TYPE = "im.vector.setting.integration_provisioning";
+const OVERRIDE_COLORS_EVENT_TYPE = "im.vector.setting.override_colors";
 
 /**
  * Gets and sets settings at the "account" level for the current user.
@@ -110,6 +111,11 @@ export default class AccountSettingsHandler extends MatrixClientBackedSettingsHa
             return content ? content['enabled'] : null;
         }
 
+        // Special case override colors
+        if (settingName === "override_colors") {
+            return this.getSettings(OVERRIDE_COLORS_EVENT_TYPE) || {};
+        }
+
         const settings = this.getSettings() || {};
         let preferredValue = settings[settingName];
 
@@ -156,6 +162,11 @@ export default class AccountSettingsHandler extends MatrixClientBackedSettingsHa
             const content = this.getSettings(INTEG_PROVISIONING_EVENT_TYPE) || {};
             content['enabled'] = newValue;
             return MatrixClientPeg.get().setAccountData(INTEG_PROVISIONING_EVENT_TYPE, content);
+        }
+
+        // Special case override colors
+        if (settingName === "override_colors") {
+            return MatrixClientPeg.get().setAccountData(OVERRIDE_COLORS_EVENT_TYPE, newValue);
         }
 
         const content = this.getSettings() || {};
