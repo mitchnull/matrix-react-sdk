@@ -73,6 +73,8 @@ export default class AccountSettingsHandler extends MatrixClientBackedSettingsHa
         } else if (event.getType() === RECENT_EMOJI_EVENT_TYPE) {
             const val = event.getContent()['enabled'];
             this.watchers.notifyUpdate("recent_emoji", null, SettingLevel.ACCOUNT, val);
+        } else if (event.getType() === OVERRIDE_COLORS_EVENT_TYPE) {
+            this.watchers.notifyUpdate("override_colors", null, SettingLevel.ACCOUNT, event.getContent());
         }
     }
 

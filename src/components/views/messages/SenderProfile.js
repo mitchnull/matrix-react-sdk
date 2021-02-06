@@ -21,6 +21,7 @@ import FlairStore from '../../../stores/FlairStore';
 import { _t } from '../../../languageHandler';
 import {getUserNameColorClass, getUserNameColorStyle} from '../../../utils/FormattingUtils';
 import MatrixClientContext from "../../../contexts/MatrixClientContext";
+import SettingsStore from "../../../settings/SettingsStore";
 
 export default class SenderProfile extends React.Component {
     static propTypes = {
@@ -48,11 +49,14 @@ export default class SenderProfile extends React.Component {
         });
 
         this.context.on('RoomState.events', this.onRoomStateEvents);
+        this.overrideColorsWatcherRef =
+            SettingsStore.watchSetting("override_colors", null, this.onOverrideColorsChange);
     }
 
     componentWillUnmount() {
         this.unmounted = true;
         this.context.removeListener('RoomState.events', this.onRoomStateEvents);
+        SettingsStore.unwatchSetting(this.overrideColorsWatcherRef);
     }
 
     onRoomStateEvents = event => {
@@ -61,6 +65,11 @@ export default class SenderProfile extends React.Component {
         ) {
             this._updateRelatedGroups();
         }
+    };
+
+    onOverrideColorsChange = () => {
+        // Trigger a redraw:
+        this.setState({});
     };
 
     _updateRelatedGroups() {

@@ -63,6 +63,7 @@ import { EventType } from "matrix-js-sdk/src/@types/event";
 import TextInputDialog from "../dialogs/TextInputDialog";
 import {SettingLevel} from "../../../settings/SettingLevel";
 import {getUserNameColorClass, getUserNameColorStyle} from '../../../utils/FormattingUtils'
+import {useSettingValue} from "../../../hooks/useSettings";
 
 interface IDevice {
     deviceId: string;
@@ -1427,6 +1428,9 @@ const UserInfoHeader: React.FC<{
     e2eStatus: E2EStatus;
 }> = ({member, e2eStatus}) => {
     const cli = useContext(MatrixClientContext);
+
+    // We don't use overrideColors directly, but need to trigger a redraw if it changes:
+    const overrideColors = useSettingValue("override_colors");
 
     const onMemberAvatarClick = useCallback(() => {
         const avatarUrl = member.getMxcAvatarUrl ? member.getMxcAvatarUrl() : member.avatarUrl;
