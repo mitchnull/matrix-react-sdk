@@ -62,6 +62,7 @@ import InfoDialog from "../dialogs/InfoDialog";
 import { EventType } from "matrix-js-sdk/src/@types/event";
 import TextInputDialog from "../dialogs/TextInputDialog";
 import {SettingLevel} from "../../../settings/SettingLevel";
+import {getUserNameColorClass, getUserNameColorStyle} from '../../../utils/FormattingUtils'
 
 interface IDevice {
     deviceId: string;
@@ -1501,6 +1502,8 @@ const UserInfoHeader: React.FC<{
     }
 
     const displayName = member.name || member.displayname;
+    const colorStyle = getUserNameColorStyle(member.userId);
+    const colorClass = colorStyle ? "" : getUserNameColorClass(member.userId);
     return <React.Fragment>
         { avatarElement }
 
@@ -1509,7 +1512,7 @@ const UserInfoHeader: React.FC<{
                 <div>
                     <h2>
                         { e2eIcon }
-                        <span title={displayName} aria-label={displayName}>
+                        <span title={displayName} aria-label={displayName} className={colorClass} style={colorStyle}>
                             { displayName }
                         </span>
                     </h2>
