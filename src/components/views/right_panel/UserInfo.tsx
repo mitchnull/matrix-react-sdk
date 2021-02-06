@@ -60,6 +60,7 @@ import QuestionDialog from "../dialogs/QuestionDialog";
 import ConfirmUserActionDialog from "../dialogs/ConfirmUserActionDialog";
 import InfoDialog from "../dialogs/InfoDialog";
 import { EventType } from "matrix-js-sdk/src/@types/event";
+import {SetRightPanelPhasePayload} from "../../../dispatcher/payloads/SetRightPanelPhasePayload";
 import TextInputDialog from "../dialogs/TextInputDialog";
 import {SettingLevel} from "../../../settings/SettingLevel";
 import {getUserNameColorClass, getUserNameColorStyle} from '../../../utils/FormattingUtils'
@@ -1572,6 +1573,24 @@ const UserInfo: React.FC<Props> = ({
 
     const classes = ["mx_UserInfo"];
 
+    let refireParams;
+    let previousPhase: RightPanelPhases;
+    // We have no previousPhase for when viewing a UserInfo from a Group or without a Room at this time
+    if (room && phase === RightPanelPhases.EncryptionPanel) {
+        previousPhase = RightPanelPhases.RoomMemberInfo;
+        refireParams = {member: member};
+    } else if (room) {
+        previousPhase = RightPanelPhases.RoomMemberList;
+    }
+
+    const onEncryptionPanelClose = () => {
+        dis.dispatch<SetRightPanelPhasePayload>({
+            action: Action.SetRightPanelPhase,
+            phase: previousPhase,
+            refireParams: refireParams,
+        });
+    }
+
     let content;
     switch (phase) {
         case RightPanelPhases.RoomMemberInfo:
@@ -1591,17 +1610,11 @@ const UserInfo: React.FC<Props> = ({
                 <EncryptionPanel
                     {...props as React.ComponentProps<typeof EncryptionPanel>}
                     member={member}
-                    onClose={onClose}
+                    onClose={onEncryptionPanelClose}
                     isRoomEncrypted={isRoomEncrypted}
                 />
             );
             break;
-    }
-
-    let previousPhase: RightPanelPhases;
-    // We have no previousPhase for when viewing a UserInfo from a Group or without a Room at this time
-    if (room) {
-        previousPhase = RightPanelPhases.RoomMemberList;
     }
 
     let closeLabel = undefined;
@@ -1619,6 +1632,7 @@ const UserInfo: React.FC<Props> = ({
         onClose={onClose}
         closeLabel={closeLabel}
         previousPhase={previousPhase}
+        refireParams={refireParams}
     >
         { content }
     </BaseCard>;
