@@ -60,6 +60,8 @@ import QuestionDialog from "../dialogs/QuestionDialog";
 import ConfirmUserActionDialog from "../dialogs/ConfirmUserActionDialog";
 import InfoDialog from "../dialogs/InfoDialog";
 import { EventType } from "matrix-js-sdk/src/@types/event";
+import TextInputDialog from "../dialogs/TextInputDialog";
+import {SettingLevel} from "../../../settings/SettingLevel";
 
 interface IDevice {
     deviceId: string;
@@ -317,6 +319,28 @@ const UserOptionsSection: React.FC<{
         });
     };
 
+    const onOverrideColorClick = () => {
+        const overrideColors = SettingsStore.getValue("override_colors") || {};
+        const overrideColor = overrideColors[member.userId] || "";
+        Modal.createTrackedDialog("override color dialog", "", TextInputDialog, {
+            title: _t("Override color"),
+            value: overrideColor,
+            button: _t("OK"),
+            target: member,
+            onFinished: (ok, value) => {
+                if (!ok || value == overrideColor || !value.match(/^([0-9]*|#[0-9a-fA-F]{6})$/)) {
+                    return;
+                }
+                if (value) {
+                    overrideColors[member.userId] = value;
+                } else {
+                    delete overrideColors[member.userId];
+                }
+                SettingsStore.setValue('override_colors', null, SettingLevel.ACCOUNT,  overrideColors);
+            }
+        });
+    };
+
     // Only allow the user to ignore the user if its not ourselves
     // same goes for jumping to read receipt
     if (!isMe) {
@@ -418,6 +442,12 @@ const UserOptionsSection: React.FC<{
         );
     }
 
+    const overrideColorButton = (
+        <AccessibleButton onClick={onOverrideColorClick} className="mx_UserInfo_field">
+            { _t('Override color') }
+        </AccessibleButton>
+    );
+
     return (
         <div className="mx_UserInfo_container">
             <h3>{ _t("Options") }</h3>
@@ -425,6 +455,7 @@ const UserOptionsSection: React.FC<{
                 { directMessageButton }
                 { readReceiptButton }
                 { shareUserButton }
+                { overrideColorButton }
                 { insertPillButton }
                 { inviteUserButton }
                 { ignoreButton }
