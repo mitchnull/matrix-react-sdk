@@ -339,8 +339,8 @@ const UserOptionsSection: React.FC<{
                 } else {
                     delete overrideColors[member.userId];
                 }
-                SettingsStore.setValue('override_colors', null, SettingLevel.ACCOUNT,  overrideColors);
-            }
+                SettingsStore.setValue('override_colors', null, SettingLevel.ACCOUNT, overrideColors);
+            },
         });
     };
 
