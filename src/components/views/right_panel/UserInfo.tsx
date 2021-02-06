@@ -1430,7 +1430,6 @@ const UserInfoHeader: React.FC<{
 }> = ({member, e2eStatus}) => {
     const cli = useContext(MatrixClientContext);
 
-    // We don't use overrideColors directly, but need to trigger a redraw if it changes:
     const overrideColors = useSettingValue("override_colors");
 
     const onMemberAvatarClick = useCallback(() => {
@@ -1507,8 +1506,8 @@ const UserInfoHeader: React.FC<{
     }
 
     const displayName = member.name || member.displayname;
-    const colorStyle = getUserNameColorStyle(member.userId);
-    const colorClass = colorStyle ? "" : getUserNameColorClass(member.userId);
+    const colorStyle = getUserNameColorStyle(member.userId, overrideColors);
+    const colorClass = colorStyle ? "" : getUserNameColorClass(member.userId, overrideColors);
     return <React.Fragment>
         { avatarElement }
 
