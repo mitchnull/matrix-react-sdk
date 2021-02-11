@@ -326,7 +326,7 @@ const UserOptionsSection: React.FC<{
         const overrideColors = SettingsStore.getValue("override_colors") || {};
         const overrideColor = overrideColors[member.userId] || "";
         Modal.createTrackedDialog("override color dialog", "", TextInputDialog, {
-            title: _t("Override color"),
+            title: _t("Override nick color"),
             value: overrideColor,
             button: _t("OK"),
             target: member,
@@ -447,7 +447,7 @@ const UserOptionsSection: React.FC<{
 
     const overrideColorButton = (
         <AccessibleButton onClick={onOverrideColorClick} className="mx_UserInfo_field">
-            { _t('Override color') }
+            { _t('Override nick color') }
         </AccessibleButton>
     );
 
