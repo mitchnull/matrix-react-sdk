@@ -327,6 +327,7 @@ const UserOptionsSection: React.FC<{
         const overrideColor = overrideColors[member.userId] || "";
         Modal.createTrackedDialog("override color dialog", "", TextInputDialog, {
             title: _t("Override nick color"),
+            placeholder: '#000000',
             value: overrideColor,
             button: _t("OK"),
             target: member,
