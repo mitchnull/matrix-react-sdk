@@ -36,7 +36,11 @@ export const useSettingValue = <T>(settingName: string, roomId: string = null, e
 
 // Hook to fetch the value of a setting and dynamically update when it changes
 // The setting should be a map and this returns the value for the given key in the map.
-export const useSettingSubValue = <T>(settingName: string, key: string, roomId: string = null, excludeDefault = false) => {
+export const useSettingSubValue = <T>(
+    settingName: string,
+    key: string, roomId: string = null,
+    excludeDefault = false,
+) => {
     const [value, setValue] = useState((SettingsStore.getValue<T>(settingName, roomId, excludeDefault) || {})[key]);
 
     useEffect(() => {

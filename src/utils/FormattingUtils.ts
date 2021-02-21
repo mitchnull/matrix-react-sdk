@@ -91,8 +91,8 @@ export function hashCode(str: string): number {
 export function getUserNameColorClass(userId: string): string {
     const overrideColors = SettingsStore.getValue("override_colors") || {};
     const overrideColor = overrideColors[userId];
-    const colorNumber = (((overrideColor && !overrideColor.startsWith("#")) ? +overrideColor : hashCode(userId) ) % 8) + 1;
-    return `mx_Username_color${colorNumber}`;
+    const color = (((overrideColor && !overrideColor.startsWith("#")) ? +overrideColor : hashCode(userId) ) % 8) + 1;
+    return `mx_Username_color${color}`;
 }
 
 export function getUserNameColorStyle(userId: string): object {
