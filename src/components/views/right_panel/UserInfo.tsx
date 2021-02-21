@@ -64,7 +64,7 @@ import {SetRightPanelPhasePayload} from "../../../dispatcher/payloads/SetRightPa
 import TextInputDialog from "../dialogs/TextInputDialog";
 import {SettingLevel} from "../../../settings/SettingLevel";
 import {getUserNameColorClass, getUserNameColorStyle} from '../../../utils/FormattingUtils'
-import {useSettingValue} from "../../../hooks/useSettings";
+import {useSettingSubValue} from "../../../hooks/useSettings";
 
 interface IDevice {
     deviceId: string;
@@ -1431,7 +1431,7 @@ const UserInfoHeader: React.FC<{
 }> = ({member, e2eStatus}) => {
     const cli = useContext(MatrixClientContext);
 
-    const overrideColors = useSettingValue("override_colors");
+    const overrideColor = useSettingSubValue('override_colors', member.userId);
 
     const onMemberAvatarClick = useCallback(() => {
         const avatarUrl = member.getMxcAvatarUrl ? member.getMxcAvatarUrl() : member.avatarUrl;
@@ -1507,8 +1507,8 @@ const UserInfoHeader: React.FC<{
     }
 
     const displayName = member.name || member.displayname;
-    const colorStyle = getUserNameColorStyle(member.userId, overrideColors);
-    const colorClass = colorStyle ? "" : getUserNameColorClass(member.userId, overrideColors);
+    const colorStyle = overrideColor ? getUserNameColorStyle(member.userId) : null;
+    const colorClass = colorStyle ? "" : getUserNameColorClass(member.userId);
     return <React.Fragment>
         { avatarElement }
 

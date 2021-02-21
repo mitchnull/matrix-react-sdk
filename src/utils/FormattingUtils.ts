@@ -88,16 +88,15 @@ export function hashCode(str: string): number {
     return Math.abs(hash);
 }
 
-export function getUserNameColorClass(userId: string, suppliedOverrideColors: unknown = null): string {
-    const overrideColors = suppliedOverrideColors || SettingsStore.getValue("override_colors") || {};
+export function getUserNameColorClass(userId: string): string {
+    const overrideColors = SettingsStore.getValue("override_colors") || {};
     const overrideColor = overrideColors[userId];
-    const colorSpec = (overrideColor && !overrideColor.startsWith("#")) ? +overrideColor : hashCode(userId);
-    const colorNumber = (colorSpec % 8) + 1;
+    const colorNumber = (((overrideColor && !overrideColor.startsWith("#")) ? +overrideColor : hashCode(userId) ) % 8) + 1;
     return `mx_Username_color${colorNumber}`;
 }
 
-export function getUserNameColorStyle(userId: string, suppliedOverrideColors: unknown = null): object {
-    const overrideColors = suppliedOverrideColors || SettingsStore.getValue("override_colors") || {};
+export function getUserNameColorStyle(userId: string): object {
+    const overrideColors = SettingsStore.getValue("override_colors") || {};
     const overrideColor = overrideColors[userId];
     if (overrideColor && overrideColor.startsWith("#")) {
         return {color: overrideColor};
