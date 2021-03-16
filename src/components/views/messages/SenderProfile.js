@@ -18,15 +18,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Flair from '../elements/Flair.js';
 import FlairStore from '../../../stores/FlairStore';
-import { _t } from '../../../languageHandler';
 import {getUserNameColorClass, getUserNameColorStyle} from '../../../utils/FormattingUtils';
 import MatrixClientContext from "../../../contexts/MatrixClientContext";
+import {replaceableComponent} from "../../../utils/replaceableComponent";
 import SettingsStore from "../../../settings/SettingsStore";
 
+@replaceableComponent("views.messages.SenderProfile")
 export default class SenderProfile extends React.Component {
     static propTypes = {
         mxEvent: PropTypes.object.isRequired, // event whose sender we're showing
-        text: PropTypes.string, // Text to show. Defaults to sender name
         onClick: PropTypes.func,
     };
 
@@ -129,17 +129,10 @@ export default class SenderProfile extends React.Component {
             { flair }
         </span>;
 
-        const content = this.props.text ?
-            <span>
-                <span className="mx_SenderProfile_aux">
-                    { _t(this.props.text, { senderName: () => nameElem }) }
-                </span>
-            </span> : nameFlair;
-
         return (
             <div className="mx_SenderProfile" dir="auto" onClick={this.props.onClick}>
                 <div className="mx_SenderProfile_hover">
-                    { content }
+                    { nameFlair }
                 </div>
             </div>
         );

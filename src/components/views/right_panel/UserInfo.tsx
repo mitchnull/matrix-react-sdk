@@ -46,6 +46,7 @@ import EncryptionPanel from "./EncryptionPanel";
 import {useAsyncMemo} from '../../../hooks/useAsyncMemo';
 import {legacyVerifyUser, verifyDevice, verifyUser} from '../../../verification';
 import {Action} from "../../../dispatcher/actions";
+import { USER_SECURITY_TAB } from "../dialogs/UserSettingsDialog";
 import {useIsEncrypted} from "../../../hooks/useIsEncrypted";
 import BaseCard from "./BaseCard";
 import {E2EStatus} from "../../../utils/ShieldUtils";
@@ -67,6 +68,7 @@ import TextInputDialog from "../dialogs/TextInputDialog";
 import {SettingLevel} from "../../../settings/SettingLevel";
 import {getUserNameColorClass, getUserNameColorStyle} from '../../../utils/FormattingUtils'
 import {useSettingSubValue} from "../../../hooks/useSettings";
+import {mediaFromMxc} from "../../../customisations/Media";
 
 interface IDevice {
     deviceId: string;
@@ -1401,6 +1403,20 @@ const BasicUserInfo: React.FC<{
         }
     }
 
+    let editDevices;
+    if (member.userId == cli.getUserId()) {
+        editDevices = (<p>
+            <AccessibleButton className="mx_UserInfo_field" onClick={() => {
+                dis.dispatch({
+                    action: Action.ViewUserSettings,
+                    initialTabId: USER_SECURITY_TAB,
+                });
+            }}>
+                { _t("Edit devices") }
+            </AccessibleButton>
+        </p>)
+    }
+
     const securitySection = (
         <div className="mx_UserInfo_container">
             <h3>{ _t("Security") }</h3>
@@ -1410,6 +1426,7 @@ const BasicUserInfo: React.FC<{
                 loading={showDeviceListSpinner}
                 devices={devices}
                 userId={member.userId} /> }
+            { editDevices }
         </div>
     );
 
@@ -1444,14 +1461,14 @@ const UserInfoHeader: React.FC<{
         const avatarUrl = member.getMxcAvatarUrl ? member.getMxcAvatarUrl() : member.avatarUrl;
         if (!avatarUrl) return;
 
-        const httpUrl = cli.mxcUrlToHttp(avatarUrl);
+        const httpUrl = mediaFromMxc(avatarUrl).srcHttp;
         const params = {
             src: httpUrl,
             name: member.name,
         };
 
         Modal.createDialog(ImageView, params, "mx_Dialog_lightbox");
-    }, [cli, member]);
+    }, [member]);
 
     const avatarElement = (
         <div className="mx_UserInfo_avatar">
