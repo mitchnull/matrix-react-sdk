@@ -46,6 +46,9 @@ export default class MessageEvent extends React.Component {
 
         /* the maximum image height to use, if the event is an image */
         maxImageHeight: PropTypes.number,
+
+        /* the permalinkCreator */
+        permalinkCreator: PropTypes.object,
     };
 
     constructor(props) {
@@ -69,7 +72,7 @@ export default class MessageEvent extends React.Component {
             'm.emote': sdk.getComponent('messages.TextualBody'),
             'm.image': sdk.getComponent('messages.MImageBody'),
             'm.file': sdk.getComponent('messages.MFileBody'),
-            'm.audio': sdk.getComponent('messages.MAudioBody'),
+            'm.audio': sdk.getComponent('messages.MVoiceOrAudioBody'),
             'm.video': sdk.getComponent('messages.MVideoBody'),
         };
         const evTypes = {
@@ -122,6 +125,7 @@ export default class MessageEvent extends React.Component {
             editState={this.props.editState}
             onHeightChanged={this.props.onHeightChanged}
             onMessageAllowed={this.onTileUpdate}
+            permalinkCreator={this.props.permalinkCreator}
         />;
     }
 }

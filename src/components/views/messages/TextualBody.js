@@ -216,12 +216,12 @@ export default class TextualBody extends React.Component {
     }
 
     _addLineNumbers(pre) {
+        // Calculate number of lines in pre
+        const number = pre.innerHTML.replace(/\n(<\/code>)?$/, "").split(/\n/).length;
         pre.innerHTML = '<span class="mx_EventTile_lineNumbers"></span>' + pre.innerHTML + '<span></span>';
         const lineNumbers = pre.getElementsByClassName("mx_EventTile_lineNumbers")[0];
-        // Calculate number of lines in pre
-        const number = pre.innerHTML.split(/\n/).length;
         // Iterate through lines starting with 1 (number of the first line is 1)
-        for (let i = 1; i < number; i++) {
+        for (let i = 1; i <= number; i++) {
             lineNumbers.innerHTML += '<span class="mx_EventTile_lineNumber">' + i + '</span>';
         }
     }
@@ -521,11 +521,12 @@ export default class TextualBody extends React.Component {
             const LinkPreviewWidget = sdk.getComponent('rooms.LinkPreviewWidget');
             widgets = this.state.links.map((link)=>{
                 return <LinkPreviewWidget
-                            key={link}
-                            link={link}
-                            mxEvent={this.props.mxEvent}
-                            onCancelClick={this.onCancelClick}
-                            onHeightChanged={this.props.onHeightChanged} />;
+                    key={link}
+                    link={link}
+                    mxEvent={this.props.mxEvent}
+                    onCancelClick={this.onCancelClick}
+                    onHeightChanged={this.props.onHeightChanged}
+                />;
             });
         }
 

@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 import * as HtmlUtils from '../../../HtmlUtils';
 import { editBodyDiffToHtml } from '../../../utils/MessageDiffUtils';
 import {formatTime} from '../../../DateUtils';
-import {MatrixEvent} from 'matrix-js-sdk';
+import {MatrixEvent} from 'matrix-js-sdk/src/models/event';
 import {pillifyLinks, unmountPills} from '../../../utils/pillify';
 import { _t } from '../../../languageHandler';
 import * as sdk from '../../../index';
@@ -160,7 +160,6 @@ export default class EditHistoryMessage extends React.PureComponent {
             "mx_EventTile": true,
             // Note: we keep the `sending` state class for tests, not for our styles
             "mx_EventTile_sending": isSending,
-            "mx_EventTile_notSent": this.state.sendStatus === 'not_sent',
         });
         return (
             <li>

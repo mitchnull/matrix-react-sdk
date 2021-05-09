@@ -24,6 +24,7 @@ import {RoomMember} from 'matrix-js-sdk/src/models/room-member';
 import {User} from 'matrix-js-sdk/src/models/user';
 import {Room} from 'matrix-js-sdk/src/models/room';
 import {EventTimeline} from 'matrix-js-sdk/src/models/event-timeline';
+import {MatrixEvent} from 'matrix-js-sdk/src/models/event';
 
 import dis from '../../../dispatcher/dispatcher';
 import Modal from '../../../Modal';
@@ -473,7 +474,7 @@ const UserOptionsSection: React.FC<{
     );
 };
 
-const warnSelfDemote = async (isSpace) => {
+const warnSelfDemote = async (isSpace: boolean) => {
     const {finished} = Modal.createTrackedDialog('Demoting Self', '', QuestionDialog, {
         title: _t("Demote yourself?"),
         description:
@@ -530,11 +531,11 @@ const isMuted = (member: RoomMember, powerLevelContent: IPowerLevelsContent) => 
 export const useRoomPowerLevels = (cli: MatrixClient, room: Room) => {
     const [powerLevels, setPowerLevels] = useState<IPowerLevelsContent>({});
 
-    const update = useCallback(() => {
-        if (!room) {
-            return;
-        }
-        const event = room.currentState.getStateEvents("m.room.power_levels", "");
+    const update = useCallback((ev?: MatrixEvent) => {
+        if (!room) return;
+        if (ev && ev.getType() !== EventType.RoomPowerLevels) return;
+
+        const event = room.currentState.getStateEvents(EventType.RoomPowerLevels, "");
         if (event) {
             setPowerLevels(event.getContent());
         } else {
@@ -545,7 +546,7 @@ export const useRoomPowerLevels = (cli: MatrixClient, room: Room) => {
         };
     }, [room]);
 
-    useEventEmitter(cli, "RoomState.members", update);
+    useEventEmitter(cli, "RoomState.events", update);
     useEffect(() => {
         update();
         return () => {
@@ -760,7 +761,7 @@ const MuteToggleButton: React.FC<IBaseRoomProps> = ({member, room, powerLevels, 
         // if muting self, warn as it may be irreversible
         if (target === cli.getUserId()) {
             try {
-                if (!(await warnSelfDemote(room?.isSpaceRoom()))) return;
+                if (!(await warnSelfDemote(SettingsStore.getValue("feature_spaces") && room?.isSpaceRoom()))) return;
             } catch (e) {
                 console.error("Failed to warn about self demotion: ", e);
                 return;
@@ -849,7 +850,7 @@ const RoomAdminToolsContainer: React.FC<IBaseRoomProps> = ({
     if (canAffectUser && me.powerLevel >= kickPowerLevel) {
         kickButton = <RoomKickButton member={member} startUpdating={startUpdating} stopUpdating={stopUpdating} />;
     }
-    if (me.powerLevel >= redactPowerLevel && !room.isSpaceRoom()) {
+    if (me.powerLevel >= redactPowerLevel && (!SettingsStore.getValue("feature_spaces") || !room.isSpaceRoom())) {
         redactButton = (
             <RedactMessagesButton member={member} startUpdating={startUpdating} stopUpdating={stopUpdating} />
         );
@@ -1128,7 +1129,7 @@ const PowerLevelEditor: React.FC<{
         } else if (myUserId === target) {
             // If we are changing our own PL it can only ever be decreasing, which we cannot reverse.
             try {
-                if (!(await warnSelfDemote(room?.isSpaceRoom()))) return;
+                if (!(await warnSelfDemote(SettingsStore.getValue("feature_spaces") && room?.isSpaceRoom()))) return;
             } catch (e) {
                 console.error("Failed to warn about self demotion: ", e);
             }
@@ -1358,10 +1359,10 @@ const BasicUserInfo: React.FC<{
     if (!isRoomEncrypted) {
         if (!cryptoEnabled) {
             text = _t("This client does not support end-to-end encryption.");
-        } else if (room && !room.isSpaceRoom()) {
+        } else if (room && (!SettingsStore.getValue("feature_spaces") || !room.isSpaceRoom())) {
             text = _t("Messages in this room are not end-to-end encrypted.");
         }
-    } else if (!room.isSpaceRoom()) {
+    } else if (!SettingsStore.getValue("feature_spaces") || !room.isSpaceRoom()) {
         text = _t("Messages in this room are end-to-end encrypted.");
     }
 
@@ -1438,7 +1439,7 @@ const BasicUserInfo: React.FC<{
             canInvite={roomPermissions.canInvite}
             isIgnored={isIgnored}
             member={member}
-            isSpace={room?.isSpaceRoom()}
+            isSpace={SettingsStore.getValue("feature_spaces") && room?.isSpaceRoom()}
         />
 
         { adminToolsContainer }
@@ -1467,7 +1468,7 @@ const UserInfoHeader: React.FC<{
             name: member.name,
         };
 
-        Modal.createDialog(ImageView, params, "mx_Dialog_lightbox");
+        Modal.createDialog(ImageView, params, "mx_Dialog_lightbox", null, true);
     }, [member]);
 
     const avatarElement = (
@@ -1530,7 +1531,7 @@ const UserInfoHeader: React.FC<{
         e2eIcon = <E2EIcon size={18} status={e2eStatus} isUser={true} />;
     }
 
-    const displayName = member.name || member.displayname;
+    const displayName = member.rawDisplayName || member.displayname;
     const colorStyle = overrideColor ? getUserNameColorStyle(member.userId) : null;
     const colorClass = colorStyle ? "" : getUserNameColorClass(member.userId);
     return <React.Fragment>
@@ -1604,7 +1605,7 @@ const UserInfo: React.FC<Props> = ({
         previousPhase = RightPanelPhases.RoomMemberInfo;
         refireParams = {member: member};
     } else if (room) {
-        previousPhase = previousPhase = room.isSpaceRoom()
+        previousPhase = previousPhase = SettingsStore.getValue("feature_spaces") && room.isSpaceRoom()
             ? RightPanelPhases.SpaceMemberList
             : RightPanelPhases.RoomMemberList;
     }
@@ -1653,7 +1654,7 @@ const UserInfo: React.FC<Props> = ({
     }
 
     let scopeHeader;
-    if (room?.isSpaceRoom()) {
+    if (SettingsStore.getValue("feature_spaces") && room?.isSpaceRoom()) {
         scopeHeader = <div className="mx_RightPanel_scopeHeader">
             <RoomAvatar room={room} height={32} width={32} />
             <RoomName room={room} />

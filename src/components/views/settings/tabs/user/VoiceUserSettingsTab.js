@@ -84,6 +84,7 @@ export default class VoiceUserSettingsTab extends React.Component {
             }
         }
         if (error) {
+            console.log("Failed to list userMedia devices", error);
             const brand = SdkConfig.get().brand;
             const ErrorDialog = sdk.getComponent('dialogs.ErrorDialog');
             Modal.createTrackedDialog('No media permissions', '', ErrorDialog, {
@@ -175,8 +176,8 @@ export default class VoiceUserSettingsTab extends React.Component {
                 const defaultDevice = getDefaultDevice(audioOutputs);
                 speakerDropdown = (
                     <Field element="select" label={_t("Audio Output")}
-                           value={this.state.activeAudioOutput || defaultDevice}
-                           onChange={this._setAudioOutput}>
+                        value={this.state.activeAudioOutput || defaultDevice}
+                        onChange={this._setAudioOutput}>
                         {this._renderDeviceOptions(audioOutputs, 'audioOutput')}
                     </Field>
                 );
@@ -187,8 +188,8 @@ export default class VoiceUserSettingsTab extends React.Component {
                 const defaultDevice = getDefaultDevice(audioInputs);
                 microphoneDropdown = (
                     <Field element="select" label={_t("Microphone")}
-                           value={this.state.activeAudioInput || defaultDevice}
-                           onChange={this._setAudioInput}>
+                        value={this.state.activeAudioInput || defaultDevice}
+                        onChange={this._setAudioInput}>
                         {this._renderDeviceOptions(audioInputs, 'audioInput')}
                     </Field>
                 );
@@ -199,8 +200,8 @@ export default class VoiceUserSettingsTab extends React.Component {
                 const defaultDevice = getDefaultDevice(videoInputs);
                 webcamDropdown = (
                     <Field element="select" label={_t("Camera")}
-                           value={this.state.activeVideoInput || defaultDevice}
-                           onChange={this._setVideoInput}>
+                        value={this.state.activeVideoInput || defaultDevice}
+                        onChange={this._setVideoInput}>
                         {this._renderDeviceOptions(videoInputs, 'videoInput')}
                     </Field>
                 );

@@ -18,7 +18,7 @@ limitations under the License.
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {Filter} from 'matrix-js-sdk';
+import {Filter} from 'matrix-js-sdk/src/filter';
 import * as sdk from '../../index';
 import {MatrixClientPeg} from '../../MatrixClientPeg';
 import EventIndexPeg from "../../indexing/EventIndexPeg";
@@ -200,10 +200,10 @@ class FilePanel extends React.Component {
                 previousPhase={RightPanelPhases.RoomSummary}
             >
                 <div className="mx_RoomView_empty">
-                { _t("You must <a>register</a> to use this functionality",
-                    {},
-                    { 'a': (sub) => <a href="#/register" key="sub">{ sub }</a> })
-                }
+                    { _t("You must <a>register</a> to use this functionality",
+                        {},
+                        { 'a': (sub) => <a href="#/register" key="sub">{ sub }</a> })
+                    }
                 </div>
             </BaseCard>;
         } else if (this.noRoom) {
