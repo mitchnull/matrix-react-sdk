@@ -71,7 +71,7 @@ import {getUserNameColorClass, getUserNameColorStyle} from '../../../utils/Forma
 import {useSettingSubValue} from "../../../hooks/useSettings";
 import {mediaFromMxc} from "../../../customisations/Media";
 
-interface IDevice {
+export interface IDevice {
     deviceId: string;
     ambiguous?: boolean;
     getDisplayName(): string;
@@ -191,9 +191,15 @@ function DeviceItem({userId, device}: {userId: string, device: IDevice}) {
         verifyDevice(cli.getUser(userId), device);
     };
 
-    const deviceName = device.ambiguous ?
-        (device.getDisplayName() ? device.getDisplayName() : "") + " (" + device.deviceId + ")" :
-        device.getDisplayName();
+    let deviceName;
+    if (!device.getDisplayName()?.trim()) {
+        deviceName = device.deviceId;
+    } else {
+        deviceName = device.ambiguous ?
+            device.getDisplayName() + " (" + device.deviceId + ")" :
+            device.getDisplayName();
+    }
+
     let trustedLabel = null;
     if (userTrust.isVerified()) trustedLabel = isVerified ? _t("Trusted") : _t("Not trusted");
 

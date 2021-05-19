@@ -811,7 +811,7 @@ export default class RoomView extends React.Component<IProps, IState> {
     };
 
     private onEvent = (ev) => {
-        if (ev.isBeingDecrypted() || ev.isDecryptionFailure()) return;
+        if (ev.isBeingDecrypted() || ev.isDecryptionFailure() || ev.shouldAttemptDecryption()) return;
         this.handleEffects(ev);
     };
 
@@ -1917,7 +1917,7 @@ export default class RoomView extends React.Component<IProps, IState> {
             );
         }
 
-        if (SettingsStore.getValue("feature_spaces") && this.state.room?.isSpaceRoom()) {
+        if (this.state.room?.isSpaceRoom()) {
             return <SpaceRoomView
                 space={this.state.room}
                 justCreatedOpts={this.props.justCreatedOpts}
